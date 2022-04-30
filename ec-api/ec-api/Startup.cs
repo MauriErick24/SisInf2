@@ -46,7 +46,9 @@ namespace ec_api
             );
 
             services.AddScoped<IRepository<Dessert>, DessertRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IDessertService<AppResponse<Dessert>>, DessertService>();
+            services.AddScoped<IUserService<AppResponse<UserAuthenticated>>, UserService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
