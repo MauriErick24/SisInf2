@@ -3,6 +3,7 @@ import PublicRoute from './PublicRoute';
 import { Route, Routes } from 'react-router-dom';
 
 const DessertsPage = lazy(() => import('../../routes/desserts'));
+const LoginPage = lazy(() => import('../../routes/login'));
 
 const AppRouter = () => {
 	return (
@@ -15,6 +16,14 @@ const AppRouter = () => {
 						</PublicRoute>
 					}
 					path='/'
+				/>
+				<Route
+					element={
+						<PublicRoute title='Login'>
+							<LoginPage />
+						</PublicRoute>
+					}
+					path='/login'
 				/>
 				<Route path='*' element={'Not found'} />
 			</Routes>
