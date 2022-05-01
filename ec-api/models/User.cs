@@ -16,5 +16,6 @@ namespace models
 
         public DateTime DateOfBirth { get; set; }
 
+        public virtual Seller Seller { get; set; }
     }
 }
