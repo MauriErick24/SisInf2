@@ -7,6 +7,8 @@ namespace interfaces.Repositories
     {
         Task<User> GetByEmail(string email);
 
-        Task<User> GetById(int id);
+        User GetById(int id);
+
+        Task<Seller> GetSellerByUserId(int userId);
     }
 }

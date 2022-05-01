@@ -16,9 +16,14 @@ namespace persistence.Repositories
             return await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
         }
 
-        public async Task<User> GetById(int id)
+        public User GetById(int id)
         {
-            return await _context.Users.SingleOrDefaultAsync(x => x.Id == id);
+            return _context.Users.Find(id);
+        }
+
+        public async Task<Seller> GetSellerByUserId(int userId)
+        {
+            return await _context.Sellers.SingleOrDefaultAsync(x => x.UserId == userId);
         }
     }
 }
