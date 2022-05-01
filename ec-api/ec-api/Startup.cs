@@ -12,12 +12,7 @@ using interfaces.Services;
 using models;
 using persistence.Contexts;
 using persistence.Repositories;
-using System.Text;
-using core;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
+
 
 namespace ec_api
 {
@@ -35,39 +30,6 @@ namespace ec_api
         {
 
             services.AddControllers();
-            var key = Encoding.ASCII.GetBytes(Constants.SecretWord);
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = context =>
-                    {
-                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService<AppResponse<UserAuthenticated>>>();
-                        var userId = int.Parse(context.Principal.Identity.Name);
-                        var user = userService.GetById(userId);
-                        if (user == null)
-                        {
-                            context.Fail("Unauthorized");
-                        }
-                        return Task.CompletedTask;
-                    }
-                };
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
             services.AddCors(options => options.AddPolicy("AppPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -77,32 +39,6 @@ namespace ec_api
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ec_api", Version = "v1" });
-                c.AddSecurityDefinition(
-                    "Bearer",
-                    new OpenApiSecurityScheme
-                    {
-                        Description = "JWT containing userid claim",
-                        Name = "Authorization",
-                        In = ParameterLocation.Header,
-                        Type = SecuritySchemeType.ApiKey,
-                    });
-                var security =
-                    new OpenApiSecurityRequirement
-                    {
-                        {
-                            new OpenApiSecurityScheme
-                            {
-                                Reference = new OpenApiReference
-                                {
-                                    Id = "Bearer",
-                                    Type = ReferenceType.SecurityScheme
-                                },
-                                UnresolvedReference = true
-                            },
-                            new List<string>()
-                        }
-                    };
-                c.AddSecurityRequirement(security); ;
             });
             string connectionStr = Configuration.GetConnectionString("AppContextConnectionString");
             services.AddDbContextPool<AppDbContext>(
@@ -111,10 +47,8 @@ namespace ec_api
 
             services.AddScoped<IRepository<Dessert>, DessertRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IRepository<Product>, ProductRepository>();
             services.AddScoped<IDessertService<AppResponse<Dessert>>, DessertService>();
             services.AddScoped<IUserService<AppResponse<UserAuthenticated>>, UserService>();
-            services.AddScoped<IProductService<AppResponse<Product>>, ProductService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
@@ -125,11 +59,7 @@ namespace ec_api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "ec_api v1");
-                    c.ConfigObject.AdditionalItems.Add("theme", "agate");
-                });
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ec_api v1"));
             }
 
             app.UseHttpsRedirection();
@@ -137,8 +67,6 @@ namespace ec_api
             app.UseRouting();
             
             app.UseCors();
-
-            app.UseAuthentication();
 
             app.UseAuthorization();
 

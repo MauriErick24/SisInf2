@@ -22,11 +22,6 @@ namespace core.Services
             _unitOfWork = unitOfWork;
         }
 
-        public User GetById(int id)
-        {
-            return _userRepository.GetById(id);
-        }
-
         public async Task<AppResponse<UserAuthenticated>> Login(UserPassword user)
         {
             if (user.Username == null && user.Password == null)
@@ -70,7 +65,7 @@ namespace core.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = claim,
-                Expires = DateTime.UtcNow.AddMinutes(120),
+                Expires = DateTime.UtcNow.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
