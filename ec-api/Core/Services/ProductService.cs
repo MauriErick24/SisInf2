@@ -44,6 +44,10 @@ namespace core.Services
             {
                 
                 var seller = await _userRepository.GetSellerByUserId(userId);
+                if (seller is null)
+                {
+                    return new AppResponse<Product>("Invalid user!");
+                }
                 entity.SellerId = seller.Id;
 
                 try
