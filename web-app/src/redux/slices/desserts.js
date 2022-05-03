@@ -40,7 +40,6 @@ export const dessertsSlice = createSlice({
 			}
 		});
 		builder.addCase(addDessert.rejected, (state, _) => {
-			console.log('Entro');
 			state.loading = 'failed';
 		});
 		builder.addCase(getDesserts.pending, (state, _) => {

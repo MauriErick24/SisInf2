@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace core.Services
 {
-    public class ProductService : IProductService<AppResponse<Product>>
+    public class ProductService : IProductService<AppResponse<Product>, PagedList<Product>>
     {
         private IRepository<Product> _productRepository;
 
@@ -24,6 +24,7 @@ namespace core.Services
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
         }
+
         public async Task<AppResponse<Product>> AddProduct(Product entity, string token)
         {
             var userId = Helper.GetUserId(token);
@@ -62,6 +63,20 @@ namespace core.Services
                     return new AppResponse<Product>($"{ex.Message}");
                 }
             }
+        }
+
+        public async Task<PagedList<Product>> ListProducts()
+        {
+            var products = await _productRepository.GetAllAsync();
+
+            return PagedList<Product>.Create(products, 1, products.Count());
+        }
+
+        public async Task<PagedList<Product>> ListProducts(int pageNumber, int pageSize)
+        {
+            var products = await _productRepository.GetAllAsync();
+
+            return PagedList<Product>.Create(products, pageNumber, pageSize);
         }
     }
 }

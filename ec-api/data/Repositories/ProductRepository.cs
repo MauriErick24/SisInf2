@@ -1,6 +1,7 @@
 ﻿using interfaces.Repositories;
 using persistence.Contexts;
 using models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,9 +16,9 @@ namespace persistence.Repositories
             await _context.Products.AddAsync(entity);
         }
 
-        public Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            throw new System.NotImplementedException();
+            return await _context.Products.ToListAsync();
         }
     }
 }

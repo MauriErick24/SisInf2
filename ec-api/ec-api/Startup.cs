@@ -1,10 +1,4 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using core;
 using core.Communication;
 using core.Services;
 using interfaces.Repositories;
@@ -12,11 +6,17 @@ using interfaces.Services;
 using models;
 using persistence.Contexts;
 using persistence.Repositories;
-using System.Text;
-using core;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace ec_api
@@ -34,7 +34,8 @@ namespace ec_api
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options =>
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             var key = Encoding.ASCII.GetBytes(Constants.SecretWord);
             services.AddAuthentication(x =>
             {
@@ -114,7 +115,7 @@ namespace ec_api
             services.AddScoped<IRepository<Product>, ProductRepository>();
             services.AddScoped<IDessertService<AppResponse<Dessert>>, DessertService>();
             services.AddScoped<IUserService<AppResponse<UserAuthenticated>>, UserService>();
-            services.AddScoped<IProductService<AppResponse<Product>>, ProductService>();
+            services.AddScoped<IProductService<AppResponse<Product>, PagedList<Product>>, ProductService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
